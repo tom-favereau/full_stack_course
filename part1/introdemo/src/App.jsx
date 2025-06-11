@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const App = () => {
     const course = {
         name: 'Half Stack application development',
@@ -22,7 +24,8 @@ const App = () => {
             < Header course={course.name}/>
             < Content parts={course.parts}/>
 
-            < Total parts={course.parts} />
+            < Total parts={course.parts}/>
+
         </div>
     )
 }
