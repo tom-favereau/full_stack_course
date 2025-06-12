@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-import personService from "./services/persons.js";
+import personService from "./services/persons.js"
+import './index.css'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -8,6 +8,8 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('')
     const [id, setId] = useState(1)
     const [filter, setFilter] = useState('')
+    const [successMessage, setSuccessMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
     useEffect(() => {
         personService
@@ -45,9 +47,12 @@ const App = () => {
                         setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
                         setNewName('')
                         setNewNumber('')
+                        setSuccessMessage(`Modified ${returnedPerson.name}`)
+                        setTimeout(() => setSuccessMessage(null), 5000)
                     })
                     .catch(error => {
-                        alert(`Information of ${newName} has already been removed from server`)
+                        setErrorMessage(`Information of ${newName} has already been removed from server`)
+                        setTimeout(() => setErrorMessage(null), 5000)
                         setPersons(persons.filter(p => p.id !== existingPerson.id))
                     })
             }
@@ -55,11 +60,11 @@ const App = () => {
         }
 
         const newPerson = {  name: newName, number: newNumber, id:id.toString() }
-        const alreadyExists = persons.some(person => person.name === newName)
-        if (alreadyExists) {
-            alert(`${newName} is already added to phonebook`)
-            return
-        }
+        //const alreadyExists = persons.some(person => person.name === newName)
+        //if (alreadyExists) {
+        //    alert(`${newName} is already added to phonebook`)
+        //    return
+        //}
         personService
             .create(newPerson)
             .then(returnedPerson => {
@@ -67,6 +72,13 @@ const App = () => {
                 setNewName('')
                 setNewNumber('')
                 setId(id+1)
+                setSuccessMessage(`Added ${returnedPerson.name}`)
+                setTimeout(() => setSuccessMessage(null), 5000)
+            })
+            .catch(error => {
+                setErrorMessage(`Information of ${newName} has already been removed from server`)
+                setTimeout(() => setErrorMessage(null), 5000)
+                setPersons(persons.filter(p => p.id !== existingPerson.id))
             })
     }
 
@@ -80,13 +92,19 @@ const App = () => {
             personService
                 .remove(id.toString())
                 .then(() => setPersons(persons.filter(p => p.id !== id)))
-                .catch(error => console.log('fail', error))
+                .catch(error => {
+                    setErrorMessage(`Information of ${newName} has already been removed from server`)
+                    setTimeout(() => setErrorMessage(null), 5000)
+                    setPersons(persons.filter(p => p.id !== existingPerson.id))
+                })
         }
     }
 
     return (
         <div>
             <h1>Phonebook</h1>
+            <NotificationSuccess message={successMessage} />
+            <NotificationError message={errorMessage} />
 
             < Filter filter={filter} handleFilterChange={handleFilterChange} />
 
@@ -142,6 +160,25 @@ const Person = ({person, handleDelete}) => {
         </div>
     )
 }
+
+const NotificationSuccess = ({ message }) => {
+    if (message === null) return null
+    return (
+        <div className="success">
+            {message}
+        </div>
+    )
+}
+
+const NotificationError = ({ message }) => {
+    if (message === null) return null
+    return (
+        <div className="error">
+            {message}
+        </div>
+    )
+}
+
 
 
 export default App
