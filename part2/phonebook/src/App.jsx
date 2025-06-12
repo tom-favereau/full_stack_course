@@ -1,13 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const App = () => {
-    const [persons, setPersons] = useState([
-        { key:0, name: 'Arto Hellas', number:"0000000" }
-    ])
+    const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
-    const [key, setKey] = useState(1)
+    const [id, setId] = useState(1)
     const [filter, setFilter] = useState('')
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:3001/persons')
+            .then(response => {
+                setPersons(response.data)
+                const maxId = Math.max(...response.data.map(p => p.id), 0)
+                setId(maxId + 1)
+            })
+    }, [])
 
     const handleNameChange = (event) => {
         setNewName(event.target.value)
@@ -23,7 +32,7 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        const newPerson = { key:key, name: newName, number: newNumber }
+        const newPerson = { id:id, name: newName, number: newNumber }
         const alreadyExists = persons.some(person => person.name === newName)
         if (alreadyExists) {
             alert(`${newName} is already added to phonebook`)
@@ -32,7 +41,7 @@ const App = () => {
         setPersons(persons.concat(newPerson))
         setNewName('')
         setNewNumber('')
-        setKey(key+1)
+        setId(id+1)
     }
 
     const personsToShow = persons.filter(person =>
@@ -58,7 +67,7 @@ const App = () => {
             <h2>Numbers</h2>
             <div>
                 {personsToShow.map(elem =>
-                    <Person key={elem.key} person={elem}/>
+                    <Person key={elem.id} person={elem}/>
                 )}
             </div>
         </div>
