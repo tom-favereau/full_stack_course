@@ -51,7 +51,8 @@ const App = () => {
                         setTimeout(() => setSuccessMessage(null), 5000)
                     })
                     .catch(error => {
-                        setErrorMessage(`Information of ${newName} has already been removed from server`)
+                        const backendMessage = error.response?.data?.error || 'Unknown error'
+                        setErrorMessage(backendMessage)
                         setTimeout(() => setErrorMessage(null), 5000)
                         setPersons(persons.filter(p => p.id !== existingPerson.id))
                     })
@@ -59,7 +60,7 @@ const App = () => {
             return
         }
 
-        const newPerson = {  name: newName, number: newNumber, id:id.toString() }
+        const newPerson = {  name: newName, number: newNumber}//, id:id.toString() }
         //const alreadyExists = persons.some(person => person.name === newName)
         //if (alreadyExists) {
         //    alert(`${newName} is already added to phonebook`)
@@ -68,7 +69,7 @@ const App = () => {
         personService
             .create(newPerson)
             .then(returnedPerson => {
-                setPersons(persons.concat(newPerson))
+                setPersons(persons.concat(returnedPerson))
                 setNewName('')
                 setNewNumber('')
                 setId(id+1)
@@ -76,9 +77,12 @@ const App = () => {
                 setTimeout(() => setSuccessMessage(null), 5000)
             })
             .catch(error => {
-                setErrorMessage(`Information of ${newName} has already been removed from server`)
+                console.log('fail')
+                const backendMessage = error.response?.data?.error || 'Unknown error'
+                console.log(backendMessage)
+                setErrorMessage(backendMessage)
                 setTimeout(() => setErrorMessage(null), 5000)
-                setPersons(persons.filter(p => p.id !== existingPerson.id))
+                //setPersons(persons.filter(p => p.id !== existingPerson.id))
             })
     }
 
@@ -95,7 +99,7 @@ const App = () => {
                 .catch(error => {
                     setErrorMessage(`Information of ${newName} has already been removed from server`)
                     setTimeout(() => setErrorMessage(null), 5000)
-                    setPersons(persons.filter(p => p.id !== existingPerson.id))
+                    //setPersons(persons.filter(p => p.id !== existingPerson.id))
                 })
         }
     }
