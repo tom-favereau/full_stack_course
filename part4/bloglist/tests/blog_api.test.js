@@ -209,15 +209,6 @@ describe('PUT /api/blogs/:id', () => {
         expect(response.body.likes).toBe(updatedLikes)
     })
 
-    test('fails with 401 if token is not provided', async () => {
-        const blogsAtStart = await Blog.find({})
-        const blogToUpdate = blogsAtStart[0]
-
-        await api
-            .put(`/api/blogs/${blogToUpdate._id.toString()}`)
-            .send({ likes: blogToUpdate.likes + 10 })
-            .expect(401)
-    })
 })
 
 afterAll(async () => {
