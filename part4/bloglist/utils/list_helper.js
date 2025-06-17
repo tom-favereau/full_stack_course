@@ -32,7 +32,6 @@ const mostBlogs = blogs => {
     }
     let res = null
     let max = 0
-    console.log(map)
 
     for (const [author, count] of map.entries()) {
         if (count >= max) {
