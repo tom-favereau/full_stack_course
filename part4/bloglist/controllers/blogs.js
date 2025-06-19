@@ -29,8 +29,9 @@ blogsRouter.post('/', middleware.tokenExtractor, middleware.userExtractor,
         })
 
         const savedBlog = await blog.save()
+        const populatedBlog = await savedBlog.populate('user', { username: 1, name: 1 })
 
-        res.status(201).json(savedBlog)
+        res.status(201).json(populatedBlog)
     }
 )
 
